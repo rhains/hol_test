@@ -10,7 +10,7 @@ Two Snowflake capabilities converge to surface this risk:
 
 1. **The Strong Authentication Hub** flags this user because it has a password but no MFA. The Hub classifies this as a compliance gap and provides remediation guidance.  
      
-2. **Trust Center's Threat Intelligence scanner** independently identifies the same user under "Migrate human users away from password-only sign-in."
+2. **[Optional] Trust Center's CIS Benchmark & Threat Intelligence scanner packages** for a full security posture assessment & near real-time monitoring
 
 The fix: Create a proper `TYPE = SERVICE` user with **Workload Identity Federation** — no password, no key pair, no credential to manage at all.
 
@@ -22,7 +22,7 @@ The fix: Create a proper `TYPE = SERVICE` user with **Workload Identity Federati
 
 - The Hub identifies `PIPELINE_USER_LEGACY` as a human user with **password-only** (no MFA) configuration  
 - It classifies this as an at-risk user needing remediation  
-- It offers guidance: "Enroll in MFA" or "Convert to a service user with stronger authentication"
+- It offers guidance: "Enroll in MFA" or "Disable the user"
 
 ---
 
@@ -51,6 +51,8 @@ Notice: `TYPE = PERSON` (default if no type is set up), `HAS_PASSWORD = TRUE`, `
 
 ## Step 3: Create the WIF Replacement — Zero Credentials
 
+Note: If you have not created a GitHub repo already, please create one. We will use the repo name and then add files to your repo in Step 4.
+
 ```sql
 -- Create a properly scoped role for the pipeline
 CREATE ROLE IF NOT EXISTS PIPELINE_SVC_ROLE;
@@ -63,6 +65,7 @@ GRANT USAGE ON WAREHOUSE LAB_WH TO ROLE PIPELINE_SVC_ROLE;
 ```sql
 -- Create the WIF service user — TYPE=SERVICE, no password possible
 -- Replace <YOUR_GITHUB_USERNAME> and <YOUR_REPO_NAME> with your values
+-- Example shrny1 and hol_test 
 USE ROLE ACCOUNTADMIN;
 CREATE USER IF NOT EXISTS GITHUB_PIPELINE_SVC
     TYPE = SERVICE
@@ -101,7 +104,7 @@ SHOW USER WORKLOAD IDENTITY AUTHENTICATION METHODS FOR USER GITHUB_PIPELINE_SVC;
 
 2. **A repository variable**: Settings → Secrets and variables → Actions → Variables → New repository variable  
    - Name: `SNOWFLAKE_ACCOUNT`  
-   - Value: your Snowflake account locator (e.g., `SFSEHOL-SUMMIT_26_GO229_CETTMS`)
+   - Value: your Snowflake account identifier (e.g., `SFSEHOL-SUMMIT_26_GO229_CETTMS`)
 
 ### The Workflow File
 
@@ -529,6 +532,8 @@ NovaCorp's CISO Maya needs to deliver a security posture report to the board nex
 2. **Trust Center \+ Cortex Code "Begin Remediation"** (GA) — AI-guided, conversational remediation directly inside Snowsight  
 3. **Trust Center finding lifecycle management** (GA) — mute, evidence, comments for compliance audit trails
 
+Note: If you have not run the CIS and Threat Intelligence packages, now is the right time to enable and run them.
+
 You'll play Bob (acting on behalf of CISO Maya) as the lab attendee throughout this module. No persona switching needed — Trust Center is an admin-level activity.
 
 ---
@@ -735,6 +740,8 @@ Back in Cortex Code chat:
 
 CoCo synthesizes everything you just did into a structured report — board-ready.  
 ---
+
+## Demo: Security & Compliance Posture Reporting
 
 ## Module 3 Summary — Trust Center \+ CoCo Skills
 
